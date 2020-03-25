@@ -56,6 +56,7 @@ function nDiceN(n, max) {
  * 	This process save actual lg informations in lgjson file.
  */
 function lg_save() {
+	lg.players = removeDuplicates(lg.players)
 	fs.writeFile(lgpath, JSON.stringify(lg), err => {
 		if (err) errorMessage('Error writting in' + lgpath)
 		else console.log('Success wrote in' + lgpath)
@@ -97,14 +98,25 @@ function lg_startgame(n) {
  * 	This function return tab witout duplicate values
  * @param {*} tab 
  */
-function removeDuplicates(tab) {
-	let unique = {};
-	tab.forEach(function(i) {
-	  if(!unique[i]) {
-		unique[i] = true;
-	  }
-	});
-	return Object.keys(unique);
+function removeDuplicates(a) {
+    var seen = {};
+    return a.filter(function(item) {
+        return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+    });
+}
+
+function lg_findPlayer(player) {
+	w = 0
+	finded = false
+
+	player = player.substring(3, player.length - 1)
+	mentions.forEach(function(z) {
+		if (z.id == player) {
+			finded = true
+		}
+		if (!finded) w++
+	})
+	return finded ? mentions[w] : errorMessage("Le joueur n'a pas été trouvé")
 }
 
 function sendPlayerList() {
@@ -112,10 +124,9 @@ function sendPlayerList() {
 	i = -1
 	while (lg.players[++i])
 	{
-		blop[i] = lg.players[i]
-		blop[i] = blop[i].substring(3, blop[i].length - 1)
+		blop[i] = ' ' + lg.players[i].username
 	}
-	return (blop = (lg.players.toString()))
+	return (blop.toString())
 }
 
 /**
@@ -123,34 +134,34 @@ function sendPlayerList() {
  * 	This process add to Player list, none_already existant players 
  * @param {Array{User}} list 
  */
-function lg_addPlayers(list) {
-	if (!list || !list[0]) return errorMessage('Aucun utilisateur trouvé')
-	lg.players = removeDuplicates(lg.players.concat(list))
-	lg_save()
-	chan.send("Succes de l'ajout des joueurs. les membres sont maintenant :" + sendPlayerList())
-}
-
-/**
- * function :
- * 	this function find and add all player mentionned to player list
- */
-function lg_findAddPlayers() {
+function lg_addPlayers() {
 	val = []
-	if ((i = tab.findIndex((str) => RegExp('.*padd').test(str))) == -1) return val
-	while (regId.test(tab[++i]))
-		val.push(tab[i])
-	return val
+	if ((i = tab.findIndex((str) => RegExp('.*padd').test(str))) == -1) return errorMessage("Aucun joueur trouvé.")
+	while (regId.test(tab[++i])) {
+		val.push(lg_findPlayer(tab[i]))
+	}
+	if (!val || !val[0]) return errorMessage('Aucun utilisateur trouvé')
+	lg.players = lg.players.concat(val)
+	lg_save()
+	chan.send("Succes de l'ajout des joueurs. Les membres sont maintenant :" + sendPlayerList())
 }
 
 function lg_setPlayers() {
 	val = []
 	if ((i = tab.findIndex((str) => RegExp('.*pset').test(str))) == -1) return errorMessage("Aucun joueur trouvé.")
-	while (regId.test(tab[++i]))
-		val.push(tab[i])
+	while (regId.test(tab[++i])) {
+		val.push(lg_findPlayer(tab[i]))
+	}
 	if (!val || !val[0]) return errorMessage('Aucun utilisateur trouvé')
-	lg.players = removeDuplicates(val)
+	lg.players = val
 	lg_save()
-	chan.send("L'affectation s'est correctement déroulée. les membres sont maintenant :" + sendPlayerList())
+	chan.send("L'affectation s'est correctement déroulée. Les membres sont maintenant :" + sendPlayerList())
+}
+
+function lg_clearPlayers() {
+	lg.players = []
+	lg_save()
+	chan.send("Liste des joueurs vidée avec succès")
 }
 
 bot.on('ready', () => {
@@ -174,8 +185,10 @@ bot.on('message', msg => {
 
 	/** Start a lg game */
 	else if (RegExp("^" + pre + 'lg', 'i').test(txt) && msg.author != bot_id) {
-		if (RegExp('padd', 'i').test(txt)) lg_addPlayers(lg_findAddPlayers())
+		if (RegExp('pclear', 'i').test(txt)) lg_clearPlayers()
 		if (RegExp('pset', 'i').test(txt)) lg_setPlayers()
+		if (RegExp('padd', 'i').test(txt)) lg_addPlayers()
+		if (RegExp('plist', 'i').test(txt)) chan.send("Liste des joueurs : " + sendPlayerList())
 		if (RegExp('lg.?$', 'i').test(txt)) {
 			if (tab[tab.length - 1].length - 1 == '2') lg_startgame(2)
 			else lg_startgame(1)
@@ -196,12 +209,7 @@ bot.on('message', msg => {
 		chan.nsfw ? chan.send('QUIT THIS CHANNEL RIGHT NOW!') : chan.send('Ce chanel est safe pour travailler.')
 	}
 	else if (reg.test(txt) && msg.author != bot_id) {
-		chan.send(mentions)
-		//console.log(txt)
-		//mention = msg.mentions.users.first()
-		//if (mention == null) return
-		//chan.send(mention + ' . ')
-		//mention.send('test')
+	
 	}
 })
 
