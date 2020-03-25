@@ -1,0 +1,49 @@
+[
+    {
+        "color": "0xff3df5",
+        "title": "jdr-bot help menu",
+        "author": {
+            "name": "Ald4nia",
+            "icon_url": "https://cdn.discordapp.com/avatars/227765280858701824/a3397d39a514e28e48cae81749430c16.webp",
+            "url": ""
+        },
+        "description": "Some description here",
+        "thumbnail": {
+            "url": ""
+        },
+        "fields": [
+            {
+                "name": "Regular field title",
+                "value": "Some value here"
+            },
+            {
+                "name": "\u200b",
+                "value": "\u200b",
+                "inline": false
+            },
+            {
+                "name": "Inline field title",
+                "value": "Some value here",
+                "inline": true
+            },
+            {
+                "name": "Inline field title",
+                "value": "Some value here",
+                "inline": true
+            },
+            {
+                "name": "Inline field title",
+                "value": "Some value here",
+                "inline": true
+            }
+        ],
+        "image": {
+            "url": "https://cdn.discordapp.com/avatars/691665384453177385/04abc2348c9b22ef57463bcfbf37d059.webp"
+        },
+        "timestamp": "new Date()",
+        "footer": {
+            "text": "Some footer text here",
+            "icon_url": "https://cdn.discordapp.com/avatars/691665384453177385/04abc2348c9b22ef57463bcfbf37d059.webp"
+        }
+    }
+]

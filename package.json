@@ -1,0 +1,15 @@
+{
+  "name": "jdr-bot",
+  "version": "0.1.0",
+  "description": "Bot for RPG on discord",
+  "main": "index.js",
+  "dependencies": {
+    "discord.js": "^12.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Riallot Jolan",
+  "license": "ISC"
+}
