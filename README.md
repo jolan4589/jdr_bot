@@ -1,8 +1,8 @@
-###Code by Riallot Jolan v 0.2
+### Code by Riallot Jolan v 0.2
 
-#Role play game bot for discord.
+#   Role play game bot for discord.
 
-##Implemented :
+##  Implemented :
 
 - %help -> Bot help.
 - %ping -> For test bot, he should send "Pong!".
