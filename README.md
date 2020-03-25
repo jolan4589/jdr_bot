@@ -2,6 +2,8 @@
 
 #   Role play game bot for discord.
 
+### Add root file : botlogin.json and fill it with : {"login" : "YourBotLogin"}
+
 ##  Implemented :
 
 - %help -> Bot help.

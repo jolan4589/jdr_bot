@@ -14,6 +14,7 @@ const reg = /test/
 const regId = RegExp('(^<)(@.*)(>$)')
 
 const botlogin = require('./botlogin.json').login
+
 /**
  * function :
  * 	this function return an int between 1 and max include
@@ -83,26 +84,12 @@ function lg_end() {
 function lg_startgame(n) {
 	if (lg.game != 0) errorMessage("Une partie est déjà en cours, cloturez là via %lgend avant d'en commencer une autre")
 	else if (lg.players.length == 0) errorMessage("Veuillez remplir la liste de joueurs via %lgp, %lgpadd ou %lgpdel (%lgp? pour voir la liste)")
-	else if (lg.cards1.length != lg.players.length && n == 2 ? lg.cards2.length : 1) errorMessage("Veuillez renseigner autant de cartes que de joueur, dans le(s) set(s) de cartes, via %lgc, %lgcadd ou %lgcdel (%lgc? pour voir la liste)")
+	else if (lg.cards1.length == lg.players.length && n == 2 ? lg.cards2.length : 1) errorMessage("Veuillez renseigner autant de cartes que de joueur, dans le(s) set(s) de cartes, via %lgc, %lgcadd ou %lgcdel (%lgc? pour voir la liste)")
 	else {
 		lg.game = 1
 		lg_save()
+		errormessage("Aucune erreur rencontré dans le lancement de la partie")
 	}
-}
-
-function lg_sendPlayerList() {
-	blop = []
-	i = -1
-	while (lg.players[++i])
-	{
-		blop[i] = lg.players[i]
-		blop[i] = blop[i].substring(3, blop[i].length - 1)
-		tmp = blop[i]
-		blop[i] = tmp.username
-		blop[i].send("yolo")
-	}
-	return (blop)
-	//return (blop = (lg.players.toString()))
 }
 
 /**
@@ -120,17 +107,27 @@ function removeDuplicates(tab) {
 	return Object.keys(unique);
 }
 
+function sendPlayerList() {
+	blop = []
+	i = -1
+	while (lg.players[++i])
+	{
+		blop[i] = lg.players[i]
+		blop[i] = blop[i].substring(3, blop[i].length - 1)
+	}
+	return (blop = (lg.players.toString()))
+}
+
 /**
  * Process :
  * 	This process add to Player list, none_already existant players 
  * @param {Array{User}} list 
  */
 function lg_addPlayers(list) {
-	if (!list || !list[0]) return errorMessage("Aucun utilisateur trouvé")
-
+	if (!list || !list[0]) return errorMessage('Aucun utilisateur trouvé')
 	lg.players = removeDuplicates(lg.players.concat(list))
 	lg_save()
-	chan.send("Succes de l'ajout des joueurs. les membres sont maintenant :" + lg_sendPlayerList())
+	chan.send("Succes de l'ajout des joueurs. les membres sont maintenant :" + sendPlayerList())
 }
 
 /**
@@ -145,14 +142,15 @@ function lg_findAddPlayers() {
 	return val
 }
 
-function lg_findPlayers() {
+function lg_setPlayers() {
 	val = []
 	if ((i = tab.findIndex((str) => RegExp('.*pset').test(str))) == -1) return errorMessage("Aucun joueur trouvé.")
 	while (regId.test(tab[++i]))
 		val.push(tab[i])
-	lg.players = val
+	if (!val || !val[0]) return errorMessage('Aucun utilisateur trouvé')
+	lg.players = removeDuplicates(val)
 	lg_save()
-	chan.send("la liste des joueurs à bien été écrasée. les membres sont maintenant :" + lg_sendPlayerList())	
+	chan.send("L'affectation s'est correctement déroulée. les membres sont maintenant :" + sendPlayerList())
 }
 
 bot.on('ready', () => {
@@ -163,6 +161,12 @@ bot.on('message', msg => {
 	chan = msg.channel
 	txt = msg.content
 	tab = txt.split(RegExp(' {1,}'))
+	z = 0
+	mentions = []
+	msg.mentions.users.forEach(function(i) {
+		mentions[z] = i
+		z++;
+	})
 	/** ping request for testing bot **/
 	if (RegExp("^" + pre + 'ping$', 'i').test(txt) && msg.author != bot_id) {
 		chan.send('Pong!')
@@ -170,11 +174,10 @@ bot.on('message', msg => {
 
 	/** Start a lg game */
 	else if (RegExp("^" + pre + 'lg', 'i').test(txt) && msg.author != bot_id) {
-		if (RegExp('pset', 'i').test(txt)) lg_findPlayers()
 		if (RegExp('padd', 'i').test(txt)) lg_addPlayers(lg_findAddPlayers())
-		if (RegExp('p\?', 'i').test(txt)) chan.send(lg_sendPlayerList())
-		if (RegExp('lg?$', 'i').test(txt)) {
-			if (txt[3] === '2') lg_startgame(2)
+		if (RegExp('pset', 'i').test(txt)) lg_setPlayers()
+		if (RegExp('lg.?$', 'i').test(txt)) {
+			if (tab[tab.length - 1].length - 1 == '2') lg_startgame(2)
 			else lg_startgame(1)
 		}
 		if (RegExp('end$', 'i').test(txt)) lg_end()
@@ -193,23 +196,12 @@ bot.on('message', msg => {
 		chan.nsfw ? chan.send('QUIT THIS CHANNEL RIGHT NOW!') : chan.send('Ce chanel est safe pour travailler.')
 	}
 	else if (reg.test(txt) && msg.author != bot_id) {
-		//msg.author.send("MDR")
+		chan.send(mentions)
 		//console.log(txt)
-		z = 0
-		man = []
-		mention = msg.mentions.users.forEach(function(i) {
-			man[z] = i
-			z++;
-		})
-		chan.send(man)
-		jsonString = JSON.stringify(man)
-		fs.writeFile('path', jsonString, err => {
-			if (err) {
-				console.log('Error writing file', err)
-			} else {
-				console.log('Successfully wrote file')
-			}
-		}) 
+		//mention = msg.mentions.users.first()
+		//if (mention == null) return
+		//chan.send(mention + ' . ')
+		//mention.send('test')
 	}
 })
 
