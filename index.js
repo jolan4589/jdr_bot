@@ -1,9 +1,12 @@
 fs = require('fs')
 
-const lgpath = './srcs/lg.json'
+const Jdr = require('./srcs/js/jdr.js')
+const Lg = require('./srcs/js/lg.js')
+
+const lgpath = './srcs/json/lg.json'
 
 const Discord = require('discord.js')
-const texts = require("./srcs/texts.json")
+const texts = require("./srcs/json/texts.json")
 const lg = require(lgpath)
 
 const bot = new Discord.Client()
@@ -11,158 +14,8 @@ const bot_id = 691665384453177385
 
 const pre = '%'
 const reg = /test/
-const regId = RegExp('(^<)(@.*)(>$)')
 
 const botlogin = require('./botlogin.json').login
-
-/**
- * function :
- * 	this function return an int between 1 and max include
- * @param {int} max 
- */
-function getRandomInt(max) {
-	return Math.floor(1 + Math.random() * Math.floor(max));
-}
-
-function errorMessage(str) {
-	chan.send(str)
-	console.log(str)
-	return
-}
-
-//	DICE FUNCTIONS
-
-/**
- * function :
- *	this function retun a str of n random, in range max, numbers.	
- * @param {int} n 
- * @param {int} max 
- */
-function nDiceN(n, max) {
-	i = 0;
-	tmp = getRandomInt(max)
-	while (++i < n)
-	{
-		tmp += ' | '
-		tmp += getRandomInt(max)
-	}
-	return (tmp)
-}
-
-//	LG FUNCTIONS
-
-/**
- * Process :
- * 	This process save actual lg informations in lgjson file.
- */
-function lg_save() {
-	lg.players = removeDuplicates(lg.players)
-	fs.writeFile(lgpath, JSON.stringify(lg), err => {
-		if (err) errorMessage('Error writting in' + lgpath)
-		else console.log('Success wrote in' + lgpath)
-	})
-}
-
-/**
- * Process :
- * 	This process close current game.
- * TODO: ajouter un affichage avec reactions pour demander de cloturer ou non la game en cours
- */
-function lg_end() {
-	if (lg.game == 0) errorMessage('Aucune partie n\'est en cours o.0')
-	else {
-		lg.game = 0
-		lg_save()
-		errorMessage('Partie cloturée, merci d\'avoir jouer')
-	}
-}
-
-/**
- * Process :
- * 	This process print jsons file informations error and start the game.
- * @param {int} n 
- */
-function lg_startgame(n) {
-	if (lg.game != 0) errorMessage("Une partie est déjà en cours, cloturez là via %lgend avant d'en commencer une autre")
-	else if (lg.players.length == 0) errorMessage("Veuillez remplir la liste de joueurs via %lgp, %lgpadd ou %lgpdel (%lgp? pour voir la liste)")
-	else if (lg.cards1.length == lg.players.length && n == 2 ? lg.cards2.length : 1) errorMessage("Veuillez renseigner autant de cartes que de joueur, dans le(s) set(s) de cartes, via %lgc, %lgcadd ou %lgcdel (%lgc? pour voir la liste)")
-	else {
-		lg.game = 1
-		lg_save()
-		errormessage("Aucune erreur rencontré dans le lancement de la partie")
-	}
-}
-
-/**
- * function :
- * 	This function return tab witout duplicate values
- * @param {*} tab 
- */
-function removeDuplicates(a) {
-    var seen = {};
-    return a.filter(function(item) {
-        return seen.hasOwnProperty(item) ? false : (seen[item] = true);
-    });
-}
-
-function lg_findPlayer(player) {
-	w = 0
-	finded = false
-
-	player = player.substring(3, player.length - 1)
-	mentions.forEach(function(z) {
-		if (z.id == player) {
-			finded = true
-		}
-		if (!finded) w++
-	})
-	return finded ? mentions[w] : errorMessage("Le joueur n'a pas été trouvé")
-}
-
-function sendPlayerList() {
-	blop = []
-	i = -1
-	while (lg.players[++i])
-	{
-		blop[i] = ' ' + lg.players[i].username
-	}
-	return (blop.toString())
-}
-
-/**
- * Process :
- * 	This process add to Player list, none_already existant players 
- * @param {Array{User}} list 
- */
-function lg_addPlayers() {
-	val = []
-	if ((i = tab.findIndex((str) => RegExp('.*padd').test(str))) == -1) return errorMessage("Aucun joueur trouvé.")
-	while (regId.test(tab[++i])) {
-		val.push(lg_findPlayer(tab[i]))
-	}
-	if (!val || !val[0]) return errorMessage('Aucun utilisateur trouvé')
-	lg.players = lg.players.concat(val)
-	lg_save()
-	chan.send("Succes de l'ajout des joueurs. Les membres sont maintenant :" + sendPlayerList())
-}
-
-function lg_setPlayers() {
-	val = []
-	if ((i = tab.findIndex((str) => RegExp('.*pset').test(str))) == -1) return errorMessage("Aucun joueur trouvé.")
-	while (regId.test(tab[++i])) {
-		val.push(lg_findPlayer(tab[i]))
-	}
-	if (!val || !val[0]) return errorMessage('Aucun utilisateur trouvé')
-	lg.players = val
-	lg_save()
-	chan.send("L'affectation s'est correctement déroulée. Les membres sont maintenant :" + sendPlayerList())
-}
-
-function lg_clearPlayers() {
-	lg.players = []
-	lg_save()
-	chan.send("Liste des joueurs vidée avec succès")
-}
 
 bot.on('ready', () => {
 	console.log(`Logged in as ${bot.user.tag}!`)
@@ -185,15 +38,15 @@ bot.on('message', msg => {
 
 	/** Start a lg game */
 	else if (RegExp("^" + pre + 'lg', 'i').test(txt) && msg.author != bot_id) {
-		if (RegExp('pclear', 'i').test(txt)) lg_clearPlayers()
-		if (RegExp('pset', 'i').test(txt)) lg_setPlayers()
-		if (RegExp('padd', 'i').test(txt)) lg_addPlayers()
-		if (RegExp('plist', 'i').test(txt)) chan.send("Liste des joueurs : " + sendPlayerList())
+		if (RegExp('pclear', 'i').test(txt)) Lg.clearPlayers()
+		if (RegExp('pset', 'i').test(txt)) Lg.setPlayers()
+		if (RegExp('padd', 'i').test(txt)) Lg.addPlayers()
+		if (RegExp('plist', 'i').test(txt)) chan.send("Liste des joueurs : " + Lg.sendPlayerList())
 		if (RegExp('lg.?$', 'i').test(txt)) {
-			if (tab[tab.length - 1].length - 1 == '2') lg_startgame(2)
-			else lg_startgame(1)
+			if (tab[tab.length - 1].length - 1 == '2') Lg.startGame(2)
+			else Lg.startGame(1)
 		}
-		if (RegExp('end$', 'i').test(txt)) lg_end()
+		if (RegExp('end$', 'i').test(txt)) Lg.endGame()
 	}
 	/** help TODO : everything **/
 	else if (RegExp("^" + pre + 'help$', 'i').test(txt) && msg.author != bot_id) {
@@ -202,14 +55,14 @@ bot.on('message', msg => {
 	/** Dice request TODO : affichage?**/
 	else if (RegExp("^" + pre + '\\d{1,3}d\\d{1,3}$', 'i').test(txt) && msg.author != bot_id) {
 		words = txt.split('d')
-		chan.send(nDiceN(words[0].substring(words[0].search(/\d/)) > 100 ? 100 : words[0].substring(words[0].search(/\d/)), words[1]))
+		chan.send(Jdr.nDiceN(words[0].substring(words[0].search(/\d/)) > 100 ? 100 : words[0].substring(words[0].search(/\d/)), words[1]))
 	}
 	/** Useless hidden nfs request /*/
 	else if (RegExp("^" + pre + 'sfw?$', 'i').test(txt) && msg.author != bot_id) {
 		chan.nsfw ? chan.send('QUIT THIS CHANNEL RIGHT NOW!') : chan.send('Ce chanel est safe pour travailler.')
 	}
 	else if (reg.test(txt) && msg.author != bot_id) {
-	
+
 	}
 })
 
