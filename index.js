@@ -2,6 +2,7 @@ fs = require('fs')
 
 const Jdr = require('./srcs/js/jdr.js')
 const Lg = require('./srcs/js/lg.js')
+const Utils = require('./srcs/js/utils.js')
 
 const lgpath = './srcs/json/lg.json'
 
@@ -24,28 +25,49 @@ bot.on('ready', () => {
 bot.on('message', msg => {
 	chan = msg.channel
 	txt = msg.content
-	tab = txt.split(RegExp(' {1,}'))
+	tab = Utils.splitInput(txt)
 	z = 0
 	mentions = []
 	msg.mentions.users.forEach(function(i) {
 		mentions[z] = i
 		z++;
 	})
-	/** ping request for testing bot **/
+	/** Ping request for testing bot **/
 	if (RegExp("^" + pre + 'ping$', 'i').test(txt) && msg.author != bot_id) {
 		chan.send('Pong!')
 	}
 
-	/** Start a lg game */
+	/**	Lg part */
 	else if (RegExp("^" + pre + 'lg', 'i').test(txt) && msg.author != bot_id) {
-		if (RegExp('pclear', 'i').test(txt)) Lg.clearPlayers()
+		/** Player part */
+		// Clear lg player list.
+		if (RegExp('pclear', 'i').test(txt)) Lg.clearList('p')
+		// Set player list.
 		if (RegExp('pset', 'i').test(txt)) Lg.setPlayers()
+		// Add player to player list.
 		if (RegExp('padd', 'i').test(txt)) Lg.addPlayers()
-		if (RegExp('plist', 'i').test(txt)) chan.send("Liste des joueurs : " + Lg.sendPlayerList())
-		if (RegExp('lg.?$', 'i').test(txt)) {
-			if (tab[tab.length - 1].length - 1 == '2') Lg.startGame(2)
+		// Print player list.
+		if (RegExp('plist', 'i').test(txt)) chan.send("Les jouers sont " + lg.players.length + " : " + Lg.sendPlayerList())
+		// attribute players role
+		if (RegExp('patt.?$', 'i').test(txt) && Utils.verifLists(tab[tab.length - 1][tab[tab.length - 1].length - 1] == '2' ? 2 : 1)) Lg.attributePlayersCard(tab[tab.length - 1][tab[tab.length - 1].length - 1] == '2' ? 2 : 1), Lg.sendPlayerRole(tab[tab.length - 1][tab[tab.length - 1].length - 1] == '2' ? 2 : 1)
+
+		/** Card part */
+		// Clear card list.
+		if (RegExp('cclear1', 'i').test(txt)) Lg.clearList('c1')
+		if (RegExp('cclear2', 'i').test(txt)) Lg.clearList('c2')
+		if (RegExp('cset1', 'i').test(txt)) Lg.setCards(1)
+		if (RegExp('cset2', 'i').test(txt)) Lg.setCards(2)
+		if (RegExp('cadd1', 'i').test(txt)) Lg.addCards(1)
+		if (RegExp('cadd2', 'i').test(txt)) Lg.addCards(2)
+		if (RegExp('clist1', 'i').test(txt)) chan.send("Total de " + lg.cards1.length + " cartes dans la liste 1 : " + lg.cards1.join(', '))
+		if (RegExp('clist2', 'i').test(txt)) chan.send("Total de " + lg.cards2.length + " cartes dans la liste 2 : " + lg.cards2.join(', '))
+		if (RegExp('mjpcards.?$').test(txt)) chan.send(Lg.sendListToMj(tab[tab.length - 1][tab[tab.length - 1].length - 1] == '2' ? 2 : 1))
+		// Start lg game.
+		if (RegExp('start.?$', 'i').test(txt)) {
+			if (tab[tab.length - 1][tab[tab.length - 1].length - 1] == '2') Lg.startGame(2)
 			else Lg.startGame(1)
 		}
+		// End lg game.
 		if (RegExp('end$', 'i').test(txt)) Lg.endGame()
 	}
 	/** help TODO : everything **/
@@ -58,15 +80,18 @@ bot.on('message', msg => {
 		chan.send(Jdr.nDiceN(words[0].substring(words[0].search(/\d/)) > 100 ? 100 : words[0].substring(words[0].search(/\d/)), words[1]))
 	}
 	/** Useless hidden nfs request /*/
-	else if (RegExp("^" + pre + 'sfw?$', 'i').test(txt) && msg.author != bot_id) {
+	else if (RegExp("^" + pre + 'sfw\?', 'i').test(txt) && msg.author != bot_id) {
 		chan.nsfw ? chan.send('QUIT THIS CHANNEL RIGHT NOW!') : chan.send('Ce chanel est safe pour travailler.')
 	}
+	else if (RegExp('%pp').test(txt)) chan.send(msg.author.displayAvatarURL())
 	else if (reg.test(txt) && msg.author != bot_id) {
-
+		Lg.sendListToMj(1)
 	}
 })
 
 bot.login(botlogin)
+
+exports.bot = bot
 
 /** TEMPLATES */
 	// lg
