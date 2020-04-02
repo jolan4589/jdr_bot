@@ -1,4 +1,4 @@
-﻿### Code by Riallot Jolan v 0.2.1
+﻿### Code by Riallot Jolan v 0.2.2
 
 #   Role play game bot for discord.
 
@@ -18,10 +18,10 @@
 - plist		-> Show actual player list.
 - pclear	-> Reset current player list.
 - pattn		-> Attribute n cards to each player and send him his role.s. 
+- plifesetn -> Set player life to n (only 1 or 2 implemented).
 - cclearn	-> Clear cards list n.
 - csetn		-> Set cards list n.
 - caddn		-> Add cards to cards list n.
 - clistn	-> Show cards list n.
-
-
-TODO : trouver un moyen de réucpérer l'objet user a partir d'une mention de ce dernier. Pour pouvoir le mp plus tard et tout.
+- vote      -> Show vote option.
+- kill      -> Kill (mention) player make decrase his lifecount by 1.

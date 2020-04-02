@@ -61,7 +61,25 @@ bot.on('message', msg => {
 		if (RegExp('cadd2', 'i').test(txt)) Lg.addCards(2)
 		if (RegExp('clist1', 'i').test(txt)) chan.send("Total de " + lg.cards1.length + " cartes dans la liste 1 : " + lg.cards1.join(', '))
 		if (RegExp('clist2', 'i').test(txt)) chan.send("Total de " + lg.cards2.length + " cartes dans la liste 2 : " + lg.cards2.join(', '))
-		if (RegExp('mjpcards.?$').test(txt)) chan.send(Lg.sendListToMj(tab[tab.length - 1][tab[tab.length - 1].length - 1] == '2' ? 2 : 1))
+		if (RegExp('mjpcards.?$', 'i').test(txt)) chan.send(Lg.sendListToMj(tab[tab.length - 1][tab[tab.length - 1].length - 1] == '2' ? 2 : 1))
+		if (RegExp('plifeset[12]', 'i').test(txt)) {
+			temp = tab.find(element => RegExp('plifeset[12]', 'i').test(element))
+			Lg.setLife(temp[temp.length - 1])
+		}
+		if (RegExp('kill', 'i').test(txt)) Lg.killPlayer(tab[tab.findIndex(elem => RegExp('kill', 'i').test(elem)) + 1])
+		if (RegExp('vote$', 'i').test(txt)) {
+			temp = Lg.voteTxt()
+			chan.send(temp.text)
+				.then(message => {
+					//temp = Lg.voteTxt()
+					i = -1
+					while (temp.emots[++i]) {
+						message.react(temp.emots[i])
+							//.catch(Utils.errorMessage("Erreur ajout emoticone"))
+					}
+				})
+				//.catch(Utils.errorMessage("Erreur envois message"))
+		}
 		// Start lg game.
 		if (RegExp('start.?$', 'i').test(txt)) {
 			if (tab[tab.length - 1][tab[tab.length - 1].length - 1] == '2') Lg.startGame(2)
@@ -85,7 +103,8 @@ bot.on('message', msg => {
 	}
 	else if (RegExp('%pp').test(txt)) chan.send(msg.author.displayAvatarURL())
 	else if (reg.test(txt) && msg.author != bot_id) {
-		Lg.sendListToMj(1)
+		//console.log(txt)
+		Lg.killPlayer('<@!227765280858701824>')
 	}
 })
 

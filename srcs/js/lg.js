@@ -14,7 +14,7 @@ const Ind = require('../../index.js')
  */
 function save() {
 	test = true
-	lg.players = Utils.removeDuplicates(lg.players)
+	//lg.players = Utils.removeDuplicates(lg.players)
 	fs.writeFile(rootLgPath, JSON.stringify(lg), err => {
 		if (err) {
 			Utils.errorMessage('Error writting in' + rootLgPath)
@@ -202,6 +202,7 @@ function setCards(wichOne) {
 		val.push((tab[i].substring(0, tab[i].length)))
 	}
 	if (!val || !val[0]) return Utils.errorMessage('Aucune carte n\'a été trouvée')
+	console.log(lg.players)
 	if (wichOne == 2) lg.cards2 = val
 	else lg.cards1 = val
 	if (save()) chan.send("L'affectation s'est correctement déroulée. Les cartes" + wichOne + " sont maintenant : " + val.join(', '))
@@ -225,9 +226,43 @@ function addCards(wichOne) {
 
 function sendListToMj(n) {
 	i = -1
+	temp = ""
 	while (lg.players[++i]) {
-		chan.send("" + lg.players[i].username + " -> " + lg.cards1[i] + '; ' + (n == 2 ? lg.cards2[i] : "none"))
+		temp = temp.concat(lg.players[i].username + " :\n\t-> " + lg.cards1[i] + (n == 2 ? '\n\t-> ' +  lg.cards2[i] + '\n' : '\n'))
 	}
+	chan.send(temp)
+}
+
+function voteTxt() {
+	//emots = [':zero:', ':one:', ':two:', ':three:', ':four:', ':five:', ':six:', ':seven:', ':eight:', ':nine:']
+	buff = ""
+	emot_buff = []
+	emots = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8⃣️', '9️⃣']
+	i = -1
+	while (lg.life[++i]) {
+		if (lg.life[i] > 0) {
+			buff = buff.concat(lg.players[i].username + '\t-> ' + (((Math.trunc(i / emots.length)) + 1) == 1 ? (Math.trunc(i / emots.length) + 1) + 'er' : Math.trunc(i / emots.length) + 'ième') + ' : ' + emots[i % emots.length] + '\n')
+			emot_buff.push(emots[Math.trunc(i % emots.length)])
+		}
+	}
+	return ({"text": buff, "emots": emot_buff})
+}
+
+function setLife(n) {
+	i = -1
+	lg.life = []
+	while (lg.players[++i]) lg.life.push(n)
+	if (save()) chan.send("Les compteurs de vie on correctement été initialisés.")
+}
+
+function killPlayer(player_username) {
+	val = findPlayer(player_username)
+	if ((n = lg.players.findIndex(elem => elem.username == val.username)) == -1) return Utils.errorMessage("La personne mentionnée n'est pas un joueur.")
+	if (lg.life[n] > 0) {
+		lg.life[n]--
+		if(save()) chan.send((lg.life[n] > 0 ? (lg.players[n].username + ' a maintenant ' + lg.life[n] + ' vie' + (lg.life[n] > 1 ? 's.' : '.')) : (lg.players[n].username + ' est mort.')))
+	}
+	else chan.send("Vous ne pouvez tuer un mort. Désolé")
 }
 
 exports.endGame = endGame
@@ -241,3 +276,6 @@ exports.sendPlayerRole = sendPlayerRole
 exports.addCards = addCards
 exports.attributePlayersCard = attributePlayersCard
 exports.sendListToMj = sendListToMj
+exports.voteTxt = voteTxt
+exports.setLife = setLife
+exports.killPlayer = killPlayer
