@@ -1,0 +1,32 @@
+{
+    "zeub" :{
+        "personnage":{
+            "nom": "Undefine",
+            "taille": null,
+            "poids": null,
+            "sexe": "M/F",
+            "age": null,
+            "statistiques": {
+                "force": [null, null],
+                "dexterite": [null, null],
+                "intelligence": [null, null],
+                "vitalite": [null, null]
+            },
+            "bonus": [
+                null
+            ],
+            "malus": [
+                null
+            ],
+            "inventaire": [
+                ["Undefine", null]
+            ],
+            "capacite": [
+                "Undefine"
+            ],
+            "description": "Undefine",
+            "objectif": [["Undefine", false]],
+            "image": null
+        }
+    }
+}

@@ -1,0 +1,97 @@
+{"personnages": [
+    {
+        "nom": "Aïden Silverion",
+        "taille": 1.80,
+        "poids": 75,
+        "sexe": "M",
+        "age": "?",
+        "statistiques": {
+            "force": [85, 0],
+            "dexterite": [7, 0],
+            "intelligence": [55, 0],
+            "vitalite": [80, 5]
+        },
+        "bonus": [
+            "Résistance et endurance physique accrue.",
+            "Longévité accrue."
+        ],
+        "malus": [
+            "Perd ses moyens en présence de dragon (jets stats / 2)"
+        ],
+        "inventaire": [
+            ["Ration", 4],
+            ["Eau(1L)", 1],
+            ["Cristaux d'adamante", 5]
+        ],
+        "capacite" : [
+            "Jet de lave"
+        ],
+        "description": "Homme dragon, sa capuche cache ses cornes et a des écailles sur avant-bras et sur le torse. Solitaire et Egoiste, n'hésite pas à jeter les poids morts. Loyal.",
+        "objectif" : [["Devenir un dieu dragon", false]],
+        "image": "https://cdn.discordapp.com/attachments/691555352201920553/698576991879823421/lancier.jpg"
+    },
+    {
+        "nom": "Cassande Ampelito",
+        "taille": 0.50,
+        "poids": 2.3,
+        "sexe": "F",
+        "age": "?",
+        "statistiques": {
+            "force": [25, 0],
+            "dexterite": [19, 10],
+            "intelligence": [100, 0],
+            "vitalite": [27, 0]
+        },
+        "bonus": [
+            "Vole.",
+            "Donne mal au crâne en foudroyant du regard."
+        ],
+        "malus": [
+        ],
+        "inventaire": [
+            ["Ration", 2],
+            ["Eau", 1],
+            ["Flasque de wiski", 0.90],
+            ["Clopes", 18],
+            ["Cristaux d'adamante", 5]
+        ],
+        "capacite": [
+            "Paume lumineuse"
+        ],
+        "description": "Cynique, essaye d'arrêter de boire et fumer, a perdu son poisson rouge récemment, si tu cherches la merde avec, tu la trouves sans craindre. Tatouage de serpant sur la jambe.",
+        "objectif": [["Eradiquer son vilalge natal", false]]
+    },
+    {
+        "nom": "Letho Norgil",
+        "taille": 1.85,
+        "poids": 95,
+        "sexe": "M",
+        "age": 0,
+        "statistiques": {
+            "force": [93, 0],
+            "dexterite": [20, 0],
+            "intelligence": [6, 0],
+            "vitalite": [30, 5]
+        },
+        "bonus": [
+            "Vision thermique.",
+            "Résistance au poison."
+        ],
+        "malus": [
+            "Daltonien.",
+            "Laisse autour du cou."
+        ],
+        "capacite": [
+            "(passif)Etreinte [faible]"
+        ],
+        "inventaire": [
+            ["Ration", 4],
+            ["Eau(1L)", 1],
+            ["Couteau", 1],
+            ["Cristaux d'adamante", 5]
+        ],
+        "description": "Homme-serpent fou à lier, sociopathe et sans aucune considération pour autrui, il aime juste tuer sauf ses amis.",
+        "objectif": [["", false]],
+        "image": "https://cdn.discordapp.com/attachments/691555352201920553/698607723498962974/6b1d78f493f2468ec09d4ec41f4f2c86.jpg"
+    }
+]}

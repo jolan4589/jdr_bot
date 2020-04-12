@@ -3,11 +3,12 @@ fs = require('fs')
 const Jdr = require('./srcs/js/jdr.js')
 const Lg = require('./srcs/js/lg.js')
 const Utils = require('./srcs/js/utils.js')
-
+const Zeub = require('./srcs/js/zeub.js')
 const lgpath = './srcs/json/lg.json'
 
 const Discord = require('discord.js')
 const texts = require("./srcs/json/texts.json")
+const zeub = require('./srcs/json/zeub.json')
 const lg = require(lgpath)
 
 const bot = new Discord.Client()
@@ -103,8 +104,26 @@ bot.on('message', msg => {
 	}
 	else if (RegExp('%pp').test(txt)) chan.send(msg.author.displayAvatarURL())
 	else if (reg.test(txt) && msg.author != bot_id) {
-		//console.log(txt)
-		Lg.killPlayer('<@!227765280858701824>')
+		/*temp = []
+		msg.guild.members.forEach(elem => temp.push(msg.guild.member(elem)))
+		temp = msg.guild.members.cache[0]
+		temp[0].send("oui")
+		temp = temp.find(elem => elem.userID == 227765280858701824)
+		temp.send("OUI")
+		console.log(temp)
+		jsonString = JSON.stringify(temp)
+		fs.writeFile('path.json', jsonString, err => {
+			if (err) {
+				console.log('Error writing file', err)
+			} else {
+				console.log('Successfully wrote file')
+			}
+		})*/
+		emb = {embed:texts[0]}
+		//console.log(Zeub.personnageDisp(0))
+		//chan.send(Zeub.personnageDisp(0))
+		//chan.send(Zeub.personnageDisp(1))
+		//chan.send(Zeub.personnageDisp(2))
 	}
 })
 
@@ -124,7 +143,32 @@ exports.bot = bot
 		"cards1":[list of poul cards 1],
 		"cards2":[same for cards 2]
 	}
-	*/
+	// Zeub
+	{
+		"nom": "",
+		"taille": 0,
+		"poids": 0,
+		"sexe": "MF",
+		"age": 0,
+		"statistiques": {
+			"force": 0,
+			"dexterite": 0,
+			"intelligence": 0,
+			"vitalite": 0
+		},
+		"bonus": [
+			"",
+			""
+		],
+		"malus": [
+		],
+		"inventaire": [
+
+		],
+		"description": "",
+		"objectif": [""]
+	}
+*/
 
 /** AIDE */
 
